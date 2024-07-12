@@ -1,0 +1,38 @@
+services:
+  # Keycloak
+  keycloak:
+    image: quay.io/keycloak/keycloak:25.0.1
+    ports:
+      - "8080:8080"
+    restart: always
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: P@ssw0rd
+    configs:
+      - source: keycloak_realm_export
+        target: /opt/keycloak/data/import/realm-export.json
+    command: start-dev --import-realm --verbose
+  # Todo Service
+  todo-service:
+    image: example/todo-service
+    build: ./todo-service
+    ports:
+      - "8081:8080"
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    environment:
+      - OIDC_ISSUER_URI=http://host.docker.internal:8080/realms/todo
+      - CORS_ALLOWED_ORIGINS=http://host.docker.internal
+  # Todo Client
+  todo-client:
+    image: example/todo-client
+    build: ./todo-client
+    ports:
+      - "80:80"
+
+#networks:
+#volumes:
+configs:
+  keycloak_realm_export:
+    file: ./keycloak/realm-export.json
+#secrets:

@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: todo
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${OIDC_ISSUER_URI:http://localhost:8080/realms/todo}
+
+# Web APIにアクセス許可するオリジンをカンマ区切りで複数指定
+cors:
+  allowed:
+    origins: http://localhost:3000
